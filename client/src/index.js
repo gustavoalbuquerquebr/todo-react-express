@@ -17,7 +17,7 @@ function AddTodo(props) {
   return (
     <form onSubmit={handleSubmit}>
       <input type="text" value={input} onChange={handleChange} />
-      <input type="submit" />
+      <input type="submit" value="Add" />
     </form>
   );
 }
