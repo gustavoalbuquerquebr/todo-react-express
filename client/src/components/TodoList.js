@@ -11,7 +11,7 @@ function TodoList(props) {
   const handleDelete = async (id) => {
     props.handleTodoDelete(id);
   };
-
+  console.log(props.todos.todos);
   return (
     <>
       <h1>Todo List</h1>

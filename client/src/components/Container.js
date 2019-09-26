@@ -62,7 +62,7 @@ function Container(props) {
     dispatch(addTodo(todo));
     });
   };
-
+  
   return (
     <main>
       <TodoList todos={props.todos} handleTodoDelete={handleTodoDelete} handleEditSubmit={handleEditSubmit} />

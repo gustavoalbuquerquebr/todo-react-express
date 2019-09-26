@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware } from "redux";
+import { createStore, applyMiddleware, combineReducers } from "redux";
 import { createLogger } from "redux-logger";
 import thunk from "redux-thunk";
 
@@ -15,48 +15,47 @@ const initialState = {
   completed: [],
 };
 
-function reducer(state = initialState, action) {
+function todosReducer(state = initialState.todos, action) {
   switch (action.type) {
     case "SET_TODOS":
-      return {
-        ...state,
-        todos: action.todos,
-      };
+      return [...action.todos];
     case "ADD_TODO":
-      return {
-        ...state,
-        todos: [...state.todos].concat([action.todo]),
-      };
+      return [...state, action.todo];
     case "REMOVE_TODO":
-      return {
-        ...state,
-        todos: state.todos.filter(todo => todo._id !== action.id ),
-      };
+      return state.filter(todo => todo._id !== action.id);
     case "UPDATE_TODO":
-      return {
-        ...state,
-        todos: state.todos.map(todo => todo._id === action.id ? { _id: todo._id, task: action.input } : todo),
-      };
-      case "TOGGLE_EDIT":
-        return {
-          ...state,
-          isEditing: { toggleValue: action.toggleValue, id: action.id }
-        };
-      case "MARK_COMPLETED":
-        return {
-          ...state,
-          completed: [...state.completed, action.id],
-        };
-      case "UNMARK_COMPLETED":
-        return {
-          ...state,
-          completed: state.completed.filter(id => id !== action.id),
-        };
+      return state.map(todo => todo._id === action.id ? { _id: todo._id, task: action.input } : todo);
     default:
       return state;
   }
 }
 
-const store = createStore(reducer, applyMiddleware(thunk, logger));
+function isEditingReducer(state = initialState.isEditing, action) {
+  switch (action.type) {
+    case "TOGGLE_EDIT":
+      return { toggleValue: action.toggleValue, id: action.id };
+    default:
+      return state;
+  }
+}
+
+function completedReducer(state = initialState.completed, action) {
+  switch (action.type) {
+    case "MARK_COMPLETED":
+      return [...state, action.id];
+    case "UNMARK_COMPLETED":
+      return state.filter(id => id !== action.id);
+    default:
+      return state;
+  }
+}
+
+const rootReducer = combineReducers({
+  todos: todosReducer,
+  isEditing: isEditingReducer,
+  completed: completedReducer,
+});
+
+const store = createStore(rootReducer, applyMiddleware(thunk, logger));
 
 export default store;
