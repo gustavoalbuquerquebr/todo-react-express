@@ -6,7 +6,16 @@ const logger = createLogger({
   collapsed: true,
 });
 
-function reducer(state = { todos: [] }, action) {
+const initialState = {
+  todos: [],
+  isEditing: {
+    toggleValue: false,
+    id: "",
+  },
+  completed: [],
+};
+
+function reducer(state = initialState, action) {
   switch (action.type) {
     case "SET_TODOS":
       return {
@@ -28,6 +37,21 @@ function reducer(state = { todos: [] }, action) {
         ...state,
         todos: state.todos.map(todo => todo._id === action.id ? { _id: todo._id, task: action.input } : todo),
       };
+      case "TOGGLE_EDIT":
+        return {
+          ...state,
+          isEditing: { toggleValue: action.toggleValue, id: action.id }
+        };
+      case "MARK_COMPLETED":
+        return {
+          ...state,
+          completed: [...state.completed, action.id],
+        };
+      case "UNMARK_COMPLETED":
+        return {
+          ...state,
+          completed: state.completed.filter(id => id !== action.id),
+        };
     default:
       return state;
   }
